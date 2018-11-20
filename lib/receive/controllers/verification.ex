@@ -9,30 +9,42 @@ defmodule Agala.Provider.Viber.Controllers.Verification do
     |> verify_request()
   end
 
-  # defp verify_request(%{
-  #        query_params: %{
-  #          "hub.mode" => "subscribe",
-  #          # We match both tokens as pattern matching
-  #          "hub.verify_token" => verify_token,
-  #          "hub.challenge" => challenge
-  #        },
-  #        private: %{
-  #          agala_bot_config: %{
-  #            provider_params: %{
-  #              # We match both tokens as pattern matching
-  #              verify_token: verify_token
-  #            }
-  #          }
-  #        }
-  #      } = conn) do
-  #       conn
-  #       |> View.render_raw(:ok, challenge)
-  # end
-
-  defp verify_request(conn) do
-    IO.inspect(conn)
+  defp verify_request(
+         %{
+           private: %{
+             body: %{"event" => "webhook"}
+           }
+         } = conn
+       ) do
     conn
     |> Conn.put_resp_content_type("application/json")
     |> Conn.send_resp(:ok, "")
+  end
+
+  defp verify_request(conn) do
+    case conn.private.agala_bot_config[:chain] do
+      nil ->
+        raise ArgumentError, "chain is not specified"
+
+      chain ->
+        chain.call(
+          %Agala.Conn{
+            request: conn.private.body,
+            request_bot_params: conn.private.agala_bot_config
+          },
+          []
+        )
+        |> resolve_response(conn)
+    end
+  end
+
+  def resolve_response(%Agala.Conn{response: {:error, reason}}, conn) do
+    conn
+    |> View.render(400, %{errors: reason})
+  end
+
+  def resolve_response(%Agala.Conn{response: nil}, conn) do
+    conn
+    |> View.render(:ok)
   end
 end

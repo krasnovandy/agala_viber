@@ -20,8 +20,8 @@ defmodule Agala.Provider.Viber.Plugs.RawBodyExtractor do
   def call(%{method: "POST"} = conn, _opts) do
     case Conn.read_body(conn, length: @length) do
       {:ok, body, conn} ->
-        # Everything is ok
         Conn.put_private(conn, :body, body)
+
       _ ->
         View.render(conn, 422, %{body: "could not be read properly!"})
     end
