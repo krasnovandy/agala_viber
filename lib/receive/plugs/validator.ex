@@ -14,8 +14,6 @@ defmodule Agala.Provider.Viber.Plugs.Validator do
 
   @doc false
   def call(%{method: "POST"} = conn, _opts) do
-    IO.inspect("validator++++++++++++++++++++++")
-
     case conn.private[:agala_bot_config][:provider_params] do
       # todo: add better logging
       nil ->
@@ -35,15 +33,8 @@ defmodule Agala.Provider.Viber.Plugs.Validator do
   end
 
   def validate_signature(conn, app_secret) do
-    [signature] = fetch_signature(conn)
-
-    IO.inspect(
-      Encryption.validate_sha256(app_secret, conn.private[:body], signature),
-      label: "validator result"
-    )
-
     case fetch_signature(conn) do
-      ["sha1=" <> signature] ->
+      [signature] ->
         case Encryption.validate_sha256(app_secret, conn.private[:body], signature) do
           :ok -> conn
           {:error, error} -> View.render(conn, :unauthorized, error)

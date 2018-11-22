@@ -9,13 +9,13 @@ defmodule Agala.Provider.Viber.Plug do
 
   use Plug.Router
   alias Agala.Provider.Viber.Plugs.{RawBodyExtractor, Validator}
-  alias Agala.Provider.Viber.Controllers.{Verification, View, Callback}
+  alias Agala.Provider.Viber.Controllers.{View, Callback}
   alias Agala.Provider.Viber.Chains.JsonDecoder
   # alias MessengerBot.Web.Controller.Messenger
   # alias MessengerBot.Web.Plug.{MaxBodyLength, AppAuthentication, Transaction, EventBus}
 
   plug(RawBodyExtractor)
-  # plug(Validator)
+  plug(Validator)
   plug(JsonDecoder)
   plug(:match)
   plug(:dispatch)
@@ -29,7 +29,7 @@ defmodule Agala.Provider.Viber.Plug do
   # POST / - Webhook verification
 
   # POST / - Webhook verification
-  post(_, do: Verification.handle(conn))
+  post(_, do: Callback.handle(conn))
 
   # 404 response to all other routes
   match(_, do: View.render(conn, :not_found, %{page: "Not found!"}))

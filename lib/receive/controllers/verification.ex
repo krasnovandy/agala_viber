@@ -1,4 +1,4 @@
-defmodule Agala.Provider.Viber.Controllers.Verification do
+defmodule Agala.Provider.Viber.Controllers.Callback do
   alias Plug.Conn
 
   alias Agala.Provider.Viber.Controllers.View
@@ -17,8 +17,7 @@ defmodule Agala.Provider.Viber.Controllers.Verification do
          } = conn
        ) do
     conn
-    |> Conn.put_resp_content_type("application/json")
-    |> Conn.send_resp(:ok, "")
+    |> View.render(:ok)
   end
 
   defp verify_request(conn) do

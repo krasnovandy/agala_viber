@@ -21,10 +21,6 @@ defmodule Agala.Provider.Viber.Util.Encryption do
     calculate_sha(:sha256, secret, body)
   end
 
-  defp calculate_sha1(secret, body) do
-    calculate_sha(:sha, secret, body)
-  end
-
   defp calculate_sha(alg, secret, body) do
     alg
     |> :crypto.hmac("#{secret}", "#{body}")
@@ -32,10 +28,3 @@ defmodule Agala.Provider.Viber.Util.Encryption do
     |> String.downcase()
   end
 end
-
-# def _calculate_message_signature(self, message):
-#   return hmac.new(
-#     bytes(self._bot_configuration.auth_token.encode('ascii')),
-#     msg=message,
-#     digestmod=hashlib.sha256)\
-#     .hexdigest()
