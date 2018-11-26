@@ -1,4 +1,4 @@
-defmodule Agala.Provider.Viber.Util.WebhookSettings do
+defmodule Agala.Provider.Viber.Util.WebhookSetting do
   @moduledoc """
     Viber webhooks managing
   """
@@ -12,7 +12,7 @@ defmodule Agala.Provider.Viber.Util.WebhookSettings do
     |> operation_status(:set)
   end
 
-  def unset(token) do
+  def remove(token) do
     HTTPoison.request!(:post, @viber_url, Jason.encode!(body("")), headers(token))
     |> fetch_body
     |> operation_status(:unset)
@@ -42,7 +42,7 @@ defmodule Agala.Provider.Viber.Util.WebhookSettings do
   end
 
   defp operation_status(%{"status" => 0}, :unset) do
-    {:ok, :webhook_unset}
+    {:ok, :webhook_removed}
   end
 
   defp operation_status(%{"status_message" => status_message}, _) do
